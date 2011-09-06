@@ -90,15 +90,24 @@ TWEEN.Tween = function ( object ) {
 	_delayTime = 0,
 	_startTime = null,
 	_easingFunction = TWEEN.Easing.Linear.EaseNone,
+	_autoUpdate = false;
+	_origProperties = null;
 	_chainedTween = null,
 	_onUpdateCallback = null,
 	_onCompleteCallback = null;
 
-	this.to = function ( properties, duration ) {
+	this.to = function ( properties, duration, autoUpdate ) {
 
 		if( duration !== null ) {
 
 			_duration = duration;
+
+		}
+
+		if( autoUpdate !== null ) {
+
+			_autoUpdate = autoUpdate;
+			_origProperties = properties;
 
 		}
 
@@ -193,6 +202,21 @@ TWEEN.Tween = function ( object ) {
 
 			return true;
 
+		}
+		
+		if( _autoUpdate ){
+			for ( var property in _origProperties ) {
+	
+				// Again, prevent dealing with null values
+				if ( _object[ property ] === null ) {
+	
+					continue;
+	
+				}
+	
+				_valuesDelta[ property ] = _origProperties[ property ] - _object[ property ];
+	
+			}
 		}
 
 		elapsed = ( time - _startTime ) / _duration;
